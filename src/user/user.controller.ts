@@ -1,6 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateRequestDto } from '../DTOs/Request/create.request.dto';
+import { CreateResponseDto } from '../DTOs/Response/create.response.dto';
+import { ReadRequestDto } from '../DTOs/Request/read.request.dto';
+import { ReadResponseDto } from '../DTOs/Response/read.response.dto';
+import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -9,16 +13,17 @@ export class UserController {
   constructor(userService: UserService) {
     this.userService = userService;
   }
-
-  @Post('create')
-  Create(@Body() data: CreateRequestDto) {
-    //Service 연결
-    const result = this.userService.Create(data);
-
-    //데이터 반환
+  //회원가입 (C)
+  @Post('join')
+  async Join(@Body() body: CreateRequestDto): Promise<CreateResponseDto> {
+    const result: CreateResponseDto = await this.userService.Join(body);
     return result;
   }
 
-  @Get('search')
-  Search(data) {}
+  //회원 조회 (R)
+  @Get('read')
+  async Read(@Res() res: Response, @Body() body: ReadRequestDto): Promise<Response> {
+    const result: ReadResponseDto = await this.userService.Read(body);
+    return res.status(result.statusCode).json(result);
+  }
 }
