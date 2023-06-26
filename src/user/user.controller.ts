@@ -13,6 +13,7 @@ export class UserController {
   constructor(userService: UserService) {
     this.userService = userService;
   }
+
   //회원가입 (C)
   @Post('join')
   async Join(@Body() body: CreateRequestDto): Promise<CreateResponseDto> {
@@ -20,7 +21,6 @@ export class UserController {
     return result;
   }
 
-  //회원 조회 (R)
   @Get('read')
   async Read(@Res() res: Response, @Body() body: ReadRequestDto): Promise<Response> {
     const result: ReadResponseDto = await this.userService.Read(body);
