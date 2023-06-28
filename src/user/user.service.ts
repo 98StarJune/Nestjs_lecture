@@ -5,20 +5,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../Entitis/user.entity';
 import { Repository } from 'typeorm';
 import { ReadRequestDto } from '../DTOs/Request/read.request.dto';
-import { ReadResponseDto } from '../DTOs/Response/read.response.dto';
+import { ResponseDto } from '../DTOs/Response/responseDto';
+import { UpdateRequestDto } from '../DTOs/Request/update.request.dto';
+import { DeleteRequestDto } from '../DTOs/Request/delete.request.dto';
 
 @Injectable()
 export class UserService {
   creteResponseDto: CreateResponseDto;
-  readResponseDto: ReadResponseDto;
+  responseDto: ResponseDto;
 
   constructor(
     createResponseDto: CreateResponseDto,
-    readResponseDto: ReadResponseDto,
+    ResponseDto: ResponseDto,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {
     this.creteResponseDto = createResponseDto;
+    this.responseDto = ResponseDto;
   }
 
   // 가입
@@ -42,19 +45,62 @@ export class UserService {
     return this.creteResponseDto;
   }
 
-  async Read(body: ReadRequestDto): Promise<ReadResponseDto> {
+  async Read(param: ReadRequestDto): Promise<ResponseDto> {
+    if (param.username === undefined) {
+      this.responseDto.statusCode = 400;
+      this.responseDto.message = '올바르지 않은 요청입니다.';
+      return this.responseDto;
+    }
+    const user: UserEntity = await this.userRepository.findOneBy({
+      username: param.username,
+    });
+    if (!user) {
+      this.responseDto.data = null;
+      this.responseDto.message = '존재하지 않는 사용자입니다.';
+      this.responseDto.statusCode = 404;
+      return this.responseDto;
+    }
+    this.responseDto.data = user;
+    this.responseDto.message = '조회를 완료했습니다.';
+    this.responseDto.statusCode = 200;
+    return this.responseDto;
+  }
+
+  async Update(body: UpdateRequestDto): Promise<ResponseDto> {
     const user: UserEntity = await this.userRepository.findOneBy({
       username: body.username,
     });
     if (!user) {
-      this.readResponseDto.data = null;
-      this.readResponseDto.message = '존재하지 않는 사용자입니다.';
-      this.readResponseDto.statusCode = 404;
-      return this.readResponseDto;
+      this.responseDto.message = '존재하지 않는 회원입니다.';
+      this.responseDto.statusCode = 404;
+      return this.responseDto;
     }
-    this.readResponseDto.data = user;
-    this.readResponseDto.message = '조회를 완료했습니다.';
-    this.readResponseDto.statusCode = 200;
-    return this.readResponseDto;
+    if (body.password) {
+      user.password = body.password;
+    } else if (body.email) {
+      user.email = body.email;
+    } else if (body.birth) {
+      user.birth = body.birth;
+    }
+    await this.userRepository.save(user);
+    this.responseDto.data = user;
+    this.responseDto.message = '성공적으로 변경했습니다.';
+    this.responseDto.statusCode = 200;
+    return this.responseDto;
+  }
+
+  async Delete(param: DeleteRequestDto): Promise<ResponseDto> {
+    const user: UserEntity = await this.userRepository.findOneBy({
+      username: param.username,
+    });
+    if (!user) {
+      this.responseDto.message = '존재하지 않는 사용자입니다.';
+      this.responseDto.statusCode = 404;
+      return this.responseDto;
+    }
+    await this.userRepository.delete({ username: param.username });
+    this.responseDto.message = '정상적으로 처리되었습니다.';
+    this.responseDto.statusCode = 200;
+    return this.responseDto;
   }
 }

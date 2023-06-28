@@ -10,11 +10,11 @@ import { UserEntity } from './Entitis/user.entity';
     UserModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'nest1.mariadb.database.azure.com',
       port: 3306,
-      username: 'root', //mysql 접속 할 때 쓰는 id
-      password: 'root',
-      database: 'test', //쓰고 싶은 이름 (DB이름)
+      username: 'nestroot@nest1', //mysql 접속 할 때 쓰는 id
+      password: 'Nest2023@',
+      database: 'starjune', //쓰고 싶은 이름 (DB이름)
       entities: [UserEntity],
       synchronize: true,
     }),

@@ -1,6 +1,6 @@
-import { Column } from 'typeorm';
+import { Column, PrimaryColumn } from "typeorm";
 
 export class DefaultEntity {
-  @Column()
+  @PrimaryColumn()
   id: number;
 }

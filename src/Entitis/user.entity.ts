@@ -1,13 +1,17 @@
 import { DefaultEntity } from './default.entity';
-import { Column } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
-export class UserEntity extends DefaultEntity {
+@Entity()
+export class UserEntity extends DefaultEntity{
   @Column()
   username: string;
+
   @Column()
   password: string;
+
   @Column()
   email: string;
+
   @Column()
   birth: string;
 }

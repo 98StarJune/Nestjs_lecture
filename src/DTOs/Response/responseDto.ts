@@ -1,12 +1,12 @@
 import { UserEntity } from '../../Entitis/user.entity';
 
-interface ReadResponse {
+interface Response {
   data: UserEntity | void;
   message: string;
   statusCode: number;
 }
 
-export class ReadResponseDto implements ReadResponse {
+export class ResponseDto implements Response {
   data: UserEntity;
   message: string;
   statusCode: number;
