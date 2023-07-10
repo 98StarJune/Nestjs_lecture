@@ -156,7 +156,7 @@ export class UserService {
         _id: user.id,
       },
       {
-        secret: 'nestjs',
+        secret: process.env.JWTSECRET,
         expiresIn: '1m',
       },
     );

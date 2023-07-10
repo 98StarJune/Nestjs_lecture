@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateRequestDto } from '../DTOs/Request/create.request.dto';
 import { CreateResponseDto } from '../DTOs/Response/create.response.dto';
@@ -11,6 +20,7 @@ import { LoginRequestDto } from '../DTOs/Request/login.request.dto';
 import { DefaultResponseDto } from '../DTOs/Response/default.response.dto';
 import { DefaultResponse } from '../DTOs/Response/interface.response.dto';
 import { JwtResponseDto } from '../DTOs/Response/jwt.response.dto';
+import { JwtGuard } from '../jwtguard/jwt.guard';
 
 @Controller('user')
 export class UserController {
@@ -29,6 +39,7 @@ export class UserController {
   }
 
   @Get('read')
+  @UseGuards(JwtGuard)
   async Read(
     @Res() res: Response,
     @Query() param: ReadRequestDto,
@@ -40,6 +51,7 @@ export class UserController {
   }
 
   @Post('update')
+  @UseGuards(JwtGuard)
   async Update(
     @Res() res: Response,
     @Body() body: UpdateRequestDto,
@@ -49,6 +61,7 @@ export class UserController {
     return res.status(result.statusCode).json(result);
   }
   @Get('delete')
+  @UseGuards(JwtGuard)
   async Delete(@Res() res: Response, @Query() param: DeleteRequestDto) {
     const result: DefaultResponse = await this.userService.Delete(param);
     return res.status(result.statusCode).json(result);
@@ -63,5 +76,3 @@ export class UserController {
     return res.status(result.statusCode).json(result);
   }
 }
-
-
